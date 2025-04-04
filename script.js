@@ -52,13 +52,98 @@ const container = document.querySelector(".container"),
         setInterval(showNextImage, 5000);
     });
 
-// Toggle between forms
-document.querySelectorAll('.signup-link, .login-link').forEach(link => {
-  link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const formType = new URL(link.href).searchParams.get('form');
-      document.querySelector('.login').style.display = formType === 'login' ? 'block' : 'none';
-      document.querySelector('.signup').style.display = formType === 'register' ? 'block' : 'none';
-      history.pushState(null, null, `auth.php?form=${formType}`);
+// Toggle Sidebar
+document.getElementById('sidebarToggle').addEventListener('click', function() {
+  document.body.classList.toggle('sidebar-toggled');
+  document.querySelector('.sidebar').classList.toggle('toggled');
+  
+  if (document.querySelector('.sidebar').classList.contains('toggled')) {
+      document.querySelector('.sidebar .collapse').classList.remove('show');
+  }
+});
+
+// Tooltip
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+});
+
+// Chart Peminjaman
+document.addEventListener('DOMContentLoaded', function() {
+  const ctx = document.getElementById('peminjamanChart').getContext('2d');
+  
+  // Data dari PHP bisa diganti dengan AJAX jika diperlukan
+  const labels = [];
+  const data = [];
+  
+  // Generate data dummy untuk contoh
+  for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      labels.push(date.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' }));
+      data.push(Math.floor(Math.random() * 10) + 2);
+  }
+  
+  const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: labels,
+          datasets: [{
+              label: 'Jumlah Peminjaman',
+              lineTension: 0.3,
+              backgroundColor: 'rgba(78, 115, 223, 0.05)',
+              borderColor: 'rgba(78, 115, 223, 1)',
+              pointRadius: 3,
+              pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+              pointBorderColor: 'rgba(78, 115, 223, 1)',
+              pointHoverRadius: 3,
+              pointHoverBackgroundColor: 'rgba(78, 115, 223, 1)',
+              pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
+              pointHitRadius: 10,
+              pointBorderWidth: 2,
+              data: data,
+          }],
+      },
+      options: {
+          maintainAspectRatio: false,
+          plugins: {
+              legend: {
+                  display: false
+              }
+          },
+          scales: {
+              y: {
+                  beginAtZero: true,
+                  ticks: {
+                      stepSize: 1
+                  }
+              }
+          }
+      }
   });
+  
+  // Notifikasi
+  if (document.querySelector('.toast')) {
+      const toast = new bootstrap.Toast(document.querySelector('.toast'));
+      toast.show();
+  }
+});
+
+// Confirm sebelum hapus
+document.querySelectorAll('.confirm-delete').forEach(button => {
+  button.addEventListener('click', function(e) {
+      if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+          e.preventDefault();
+      }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebar = document.querySelector('.sidebar');
+    const content = document.getElementById('content');
+    const sidebarCollapse = document.getElementById('sidebarCollapse');
+
+    sidebarCollapse.addEventListener('click', function () {
+        sidebar.classList.toggle('collapsed');
+        content.classList.toggle('collapsed');
+    });
 });
